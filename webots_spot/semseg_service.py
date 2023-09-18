@@ -45,8 +45,8 @@ class SemSegService(Node):
             if self.publisher == 'init':
                 self.publisher = self.create_publisher(Image, self.get_parameter('publish_topic_name').value, 1)
             pred = self.create_mask(prediction).numpy()
-            pred = pred.astype(np.int32)
-            msg = rnp.msgify(Image, pred, '32SC1')
+            pred = pred.astype(np.int16)
+            msg = rnp.msgify(Image, pred, '16SC1')
         else:
             self.publisher = self.create_publisher(Float64MultiArray, self.get_parameter('model_name').value, 1)
             msg = Float64MultiArray()
@@ -54,6 +54,7 @@ class SemSegService(Node):
  
         
         #publish prediction to topic
+        msg.header.frame_id = "kinect_color"
         self.publisher.publish(msg)
 
         #respond service call with the name of the prediction topic
